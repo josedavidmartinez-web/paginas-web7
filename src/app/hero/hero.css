@@ -1,0 +1,16 @@
+.tu-seccion-hero {
+  width: 100%;
+  min-height: 500px;
+  background-color: #0b2545;
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(11, 37, 69, 0.92) 0%,
+      rgba(11, 37, 69, 0.72) 52%,
+      rgba(11, 37, 69, 0.25) 100%
+    ),
+    url("https://midposi.com/wp-content/uploads/2025/03/Durable-Cleanroom-Frocks-for-Hospital-EVS-Teams-feature.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

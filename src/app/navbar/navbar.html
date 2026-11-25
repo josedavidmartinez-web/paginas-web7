@@ -1,0 +1,106 @@
+<nav class="navbar navbar-expand-lg bg-light border-bottom sticky-top py-2">
+  <div class="container">
+    <!-- Logotipo y Nombre alineados -->
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary mb-0" routerLink="/">
+      <img
+        src="/image/Logo.png"
+        alt="Logo Unidad Médica Araucaria"
+        width="100"
+        height="30"
+        class="object-fit-contain"
+      />
+      <span>Clínica Araucaria</span>
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Alternar navegación"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Contenedor del menú alineado a la derecha -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav align-items-lg-center gap-lg-3 mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/"
+            routerLinkActive="active fw-semibold text-primary"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            Inicio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/nosotros"
+            routerLinkActive="active fw-semibold text-primary"
+          >
+            Nosotros
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/productos"
+            routerLinkActive="active fw-semibold text-primary"
+          >
+            Productos y/o Servicios
+          </a>
+        </li>
+
+        <!-- CONDICIÓN DINÁMICA DE AUTENTICACIÓN -->
+        @if (auth.isAuthenticated()) {
+          @if (auth.isAdmin()) {
+            <li class="nav-item">
+              <a
+                class="nav-link fw-semibold text-primary"
+                routerLink="/admin"
+                routerLinkActive="active"
+              >
+                Admin
+              </a>
+            </li>
+          } @else {
+            <li class="nav-item">
+              <a
+                class="nav-link fw-semibold text-primary"
+                routerLink="/agendar-cita"
+                routerLinkActive="active"
+              >
+                Agendar Cita
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link fw-semibold text-success"
+                routerLink="/paciente"
+                routerLinkActive="active"
+              >
+                Mi Cuenta
+              </a>
+            </li>
+          }
+          <li class="nav-item">
+            <button type="button" (click)="salir()" class="btn btn-outline-danger btn-sm px-3 fw-semibold">
+              Cerrar Sesión
+            </button>
+          </li>
+        } @else {
+          <li class="nav-item">
+            <a class="btn btn-outline-primary px-3 fw-medium" routerLink="/login">
+              Inicio de Sesión
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</nav>

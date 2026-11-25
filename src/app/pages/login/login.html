@@ -1,0 +1,211 @@
+<section class="login-wrapper py-5 bg-light min-vh-100 d-flex align-items-center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-7 col-lg-5">
+        <div class="card login-card shadow-sm border-0 rounded-4 overflow-hidden">
+          <!-- Encabezado institucional -->
+          <div class="login-header p-4 text-center text-white">
+            <span class="badge rounded-pill text-bg-light text-primary fw-semibold px-3 py-2 mb-2">
+              Portal del Paciente
+            </span>
+            <h1 class="h4 fw-bold mb-1">
+              {{ modoRegistro() ? 'Crear cuenta' : 'Iniciar sesión' }}
+            </h1>
+            <p class="small text-white-50 mb-0" style="--bs-text-opacity: 0.85;">
+              {{
+                modoRegistro()
+                  ? 'Completa tus datos para registrarte'
+                  : 'Ingresa con tu nombre de usuario y contraseña'
+              }}
+            </p>
+          </div>
+
+          <div class="card-body p-4 p-md-5 bg-white">
+            @if (mensajeExito()) {
+              <div class="alert alert-success small py-2 mb-4" role="alert">
+                {{ mensajeExito() }}
+              </div>
+            }
+
+            @if (error()) {
+              <div class="alert alert-danger small py-2 mb-4" role="alert">
+                {{ error() }}
+              </div>
+            }
+
+            <form [formGroup]="formulario" (ngSubmit)="envio()" novalidate>
+              @if (modoRegistro()) {
+                <div class="row g-3 mb-3">
+                  <!-- Nombre -->
+                  <div class="col-sm-6">
+                    <label for="firstname" class="form-label fw-semibold small login-label">
+                      Nombre
+                    </label>
+                    <input
+                      type="text"
+                      id="firstname"
+                      class="form-control"
+                      placeholder="Ej. Juan"
+                      formControlName="firstname"
+                      [class.is-invalid]="invalido('firstname')"
+                    />
+                    @if (invalido('firstname')) {
+                      <div class="invalid-feedback">Ingresa tu nombre.</div>
+                    }
+                  </div>
+
+                  <!-- Apellido -->
+                  <div class="col-sm-6">
+                    <label for="lastname" class="form-label fw-semibold small login-label">
+                      Apellido
+                    </label>
+                    <input
+                      type="text"
+                      id="lastname"
+                      class="form-control"
+                      placeholder="Ej. Pérez"
+                      formControlName="lastname"
+                      [class.is-invalid]="invalido('lastname')"
+                    />
+                    @if (invalido('lastname')) {
+                      <div class="invalid-feedback">Ingresa tu apellido.</div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Correo electrónico (requerido por la API) -->
+                <div class="mb-3">
+                  <label for="email" class="form-label fw-semibold small login-label">
+                    Correo electrónico
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    class="form-control"
+                    placeholder="paciente@correo.com"
+                    formControlName="email"
+                    [class.is-invalid]="invalido('email')"
+                  />
+                  @if (invalido('email')) {
+                    <div class="invalid-feedback">Ingresa un correo electrónico válido.</div>
+                  }
+                </div>
+
+                <!-- Teléfono (requerido por la API) -->
+                <div class="mb-3">
+                  <label for="phone" class="form-label fw-semibold small login-label">
+                    Teléfono
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    class="form-control"
+                    placeholder="Ej. 271-123-4567"
+                    formControlName="phone"
+                    [class.is-invalid]="invalido('phone')"
+                  />
+                  @if (invalido('phone')) {
+                    <div class="invalid-feedback">Ingresa un teléfono válido.</div>
+                  }
+                </div>
+              }
+
+              <!-- Usuario -->
+              <div class="mb-3">
+                <label for="usuario" class="form-label fw-semibold small login-label">
+                  Usuario
+                </label>
+                <input
+                  type="text"
+                  id="usuario"
+                  class="form-control"
+                  placeholder="Ej. mor_2314"
+                  formControlName="usuario"
+                  [class.is-invalid]="invalido('usuario')"
+                />
+                @if (invalido('usuario')) {
+                  <div class="invalid-feedback">
+                    Ingresa tu nombre de usuario (mínimo 3 caracteres).
+                  </div>
+                }
+              </div>
+
+              <!-- Contraseña -->
+              <div class="mb-4">
+                <label for="password" class="form-label fw-semibold small login-label">
+                  Contraseña
+                </label>
+                <div class="input-group">
+                  <input
+                    [type]="mostrarPassword() ? 'text' : 'password'"
+                    id="password"
+                    class="form-control"
+                    placeholder="••••••••"
+                    formControlName="password"
+                    [class.is-invalid]="invalido('password')"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="togglePassword()"
+                  >
+                    {{ mostrarPassword() ? 'Ocultar' : 'Ver' }}
+                  </button>
+                  @if (invalido('password')) {
+                    <div class="invalid-feedback">
+                      La contraseña debe tener al menos 4 caracteres.
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Botón principal -->
+              <button
+                type="submit"
+                class="btn btn-primary w-100 btn-lg fw-semibold shadow-sm"
+                [disabled]="loading()"
+              >
+                @if (loading()) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  {{ modoRegistro() ? 'Creando cuenta...' : 'Ingresando...' }}
+                } @else {
+                  {{ modoRegistro() ? 'Crear cuenta' : 'Ingresar' }}
+                }
+              </button>
+            </form>
+
+            <!-- Cambio entre Iniciar Sesión y Crear Cuenta -->
+            <div class="text-center mt-4 pt-3 border-top">
+              @if (!modoRegistro()) {
+                <p class="text-muted small mb-1">¿No tienes una cuenta?</p>
+                <button
+                  type="button"
+                  class="btn btn-link fw-semibold text-decoration-none p-0"
+                  (click)="cambiarModo(true)"
+                >
+                  Crear cuenta nueva
+                </button>
+              } @else {
+                <p class="text-muted small mb-1">¿Ya tienes una cuenta?</p>
+                <button
+                  type="button"
+                  class="btn btn-link fw-semibold text-decoration-none p-0"
+                  (click)="cambiarModo(false)"
+                >
+                  Iniciar sesión
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Enlace de regreso -->
+        <div class="text-center mt-3">
+          <a [routerLink]="['/']" class="text-muted small text-decoration-none">
+            ← Volver al inicio de Unidad Médica Araucaria
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

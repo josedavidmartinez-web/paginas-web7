@@ -1,0 +1,10 @@
+.tu-seccion-hero {
+  width: 100%;
+  min-height: 500px;
+  background-image:
+    linear-gradient(rgba(11, 37, 69, 0.78), rgba(11, 37, 69, 0.78)),
+    url("https://img.freepik.com/vector-premium/fondo-medico-abstracto-iconos-simbolos-planos-conceptos-e-ideas-tecnologia-sanitaria_542898-988.jpg?w=2000");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

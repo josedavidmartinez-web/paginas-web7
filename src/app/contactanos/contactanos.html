@@ -1,0 +1,135 @@
+<section id="contact" class="py-5 bg-light">
+  <div class="container">
+    <div class="card shadow-sm border-0 overflow-hidden rounded-4">
+      <div class="row g-0">
+
+        <!-- Columna Izquierda: Información de contacto -->
+        <div class="col-lg-5 text-white p-4 p-md-5 d-flex flex-column justify-content-between" style="background-color: #0b2545;">
+          <div>
+            <span class="badge rounded-pill text-bg-light text-primary fw-semibold mb-3 px-3 py-2">
+              Atención al paciente
+            </span>
+            <h2 class="fw-bold mb-3">Contáctanos</h2>
+            <p class="text-white-50 mb-4" style="--bs-text-opacity: 0.85;">
+              Cuéntanos qué necesitas, resuelve tus dudas sobre estudios o consultas y te responderemos en menos de 24 horas.
+            </p>
+
+            <ul class="list-unstyled d-grid gap-3 mb-0">
+              <li class="d-flex align-items-start gap-3">
+                <span class="fw-bold text-info">Teléfono:</span>
+                <span>271 000 0000</span>
+              </li>
+              <li class="d-flex align-items-start gap-3">
+                <span class="fw-bold text-info">Horario:</span>
+                <span>Lunes a Sábado, 8:00 AM – 8:00 PM</span>
+              </li>
+              <li class="d-flex align-items-start gap-3">
+                <span class="fw-bold text-info">Ubicación:</span>
+                <span>Unidad Médica Araucaria</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="pt-4 mt-4 border-top border-light border-opacity-25 small text-white-50">
+            Tus datos personales son confidenciales y se utilizan únicamente para dar seguimiento a tu solicitud médica.
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Formulario existente -->
+        <div class="col-lg-7 bg-white p-4 p-md-5">
+          <h3 class="h4 fw-bold mb-1">Envíanos un mensaje</h3>
+          <p class="text-muted small mb-4">Completa los siguientes campos y nos pondremos en contacto contigo.</p>
+
+          <form [formGroup]="formulario" (ngSubmit)="envio()">
+            <div class="mb-3">
+              <label class="form-label fw-semibold" for="nombre">Nombre completo</label>
+              <input
+                id="nombre"
+                type="text"
+                class="form-control"
+                formControlName="nombre"
+                placeholder="Escribe tu nombre completo"
+                [class.is-invalid]="invalido('nombre')"
+              />
+              @if (invalido('nombre')) {
+                <div class="invalid-feedback">El campo está vacío. Escribe tu nombre...</div>
+              }
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="correo">Correo Electrónico</label>
+                <input
+                  id="correo"
+                  type="email"
+                  class="form-control"
+                  formControlName="correo"
+                  placeholder="tucorreo@ejemplo.com"
+                  [class.is-invalid]="invalido('correo')"
+                />
+                @if (invalido('correo')) {
+                  <div class="invalid-feedback">El campo está vacío. Ingresa tu correo...</div>
+                }
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="numeroTelefono">Número de Teléfono</label>
+                <input
+                  id="numeroTelefono"
+                  type="tel"
+                  class="form-control"
+                  formControlName="numeroTelefono"
+                  placeholder="271 000 0000"
+                  [class.is-invalid]="invalido('numeroTelefono')"
+                />
+                @if (invalido('numeroTelefono')) {
+                  <div class="invalid-feedback">El campo está vacío. Ingresa tu número...</div>
+                }
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold" for="comentario">Comentario o Mensaje</label>
+              <textarea
+                id="comentario"
+                class="form-control"
+                rows="4"
+                formControlName="comentario"
+                placeholder="¿En qué podemos ayudarte?"
+                [class.is-invalid]="invalido('comentario')"
+              ></textarea>
+              @if (invalido('comentario')) {
+                <div class="invalid-feedback">Ingrese su comentario (mínimo 10 caracteres)...</div>
+              }
+            </div>
+
+            @if (mensajeExito()) {
+              <div class="alert alert-success py-2 small" role="alert">
+                ¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.
+              </div>
+            }
+
+            @if (mensajeError()) {
+              <div class="alert alert-danger py-2 small" role="alert">
+                Ocurrió un error al enviar el mensaje. Inténtalo de nuevo en unos minutos.
+              </div>
+            }
+
+            <button
+              type="submit"
+              class="btn btn-primary w-100 py-2 fw-bold shadow-sm"
+              [disabled]="enviando()"
+            >
+              @if (enviando()) {
+                Enviando...
+              } @else {
+                Enviar Mensaje
+              }
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>

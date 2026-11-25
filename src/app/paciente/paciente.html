@@ -1,0 +1,306 @@
+<section class="vista py-5 bg-light min-vh-100">
+  <div class="container">
+    <div class="row justify-content-center g-4">
+      <!-- TARJETA 1: DATOS DEL USUARIO -->
+      <div class="col-lg-10">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+          <!-- Cabecera de bienvenida -->
+          <div class="paciente-header p-4 text-white d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+            <div>
+              <span class="badge rounded-pill text-bg-light text-primary fw-semibold px-3 py-2 mb-2">
+                Mi cuenta · Unidad Médica Araucaria
+              </span>
+              <h2 class="h3 fw-bold mb-1">Hola, {{ nombreCompleto() }}</h2>
+              <p class="small text-white-50 mb-0" style="--bs-text-opacity: 0.85;">
+                Usuario activo: <strong>{{ auth.username() }}</strong>
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-outline-light btn-sm px-3"
+              (click)="cerrarSesion()"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+
+          <!-- Cuerpo con los datos del usuario -->
+          <div class="card-body p-4 p-md-5 bg-white">
+            @if (cargando()) {
+              <div class="d-flex align-items-center gap-2 text-muted py-3">
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+                <span>Cargando datos de tu cuenta...</span>
+              </div>
+            } @else if (perfil(); as datos) {
+              <h3 class="h5 fw-bold mb-4 paciente-titulo">Datos del usuario</h3>
+
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <div class="p-3 rounded-3 bg-light h-100">
+                    <div class="small text-muted mb-1">Nombre completo</div>
+                    <div class="fw-semibold text-dark text-capitalize">
+                      {{ datos.name.firstname }} {{ datos.name.lastname }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <div class="p-3 rounded-3 bg-light h-100">
+                    <div class="small text-muted mb-1">Usuario</div>
+                    <div class="fw-semibold text-dark">{{ datos.username }}</div>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <div class="p-3 rounded-3 bg-light h-100">
+                    <div class="small text-muted mb-1">Correo electrónico</div>
+                    <div class="fw-semibold text-dark">{{ datos.email }}</div>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <div class="p-3 rounded-3 bg-light h-100">
+                    <div class="small text-muted mb-1">Teléfono</div>
+                    <div class="fw-semibold text-dark">{{ datos.phone }}</div>
+                  </div>
+                </div>
+
+                @if (datos.address) {
+                  <div class="col-12">
+                    <div class="p-3 rounded-3 bg-light">
+                      <div class="small text-muted mb-1">Dirección</div>
+                      <div class="fw-semibold text-dark text-capitalize">
+                        {{ datos.address.street }} {{ datos.address.number }},
+                        {{ datos.address.city }}
+                        @if (datos.address.zipcode) {
+                          · C.P. {{ datos.address.zipcode }}
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="alert alert-info mb-0">
+                Hola, <strong>{{ auth.username() }}</strong>. Sesión iniciada correctamente, pero no se encontraron datos adicionales en el perfil.
+              </div>
+            }
+
+            <!-- Accesos rápidos -->
+            <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
+              <a routerLink="/agendar-cita" class="btn btn-success fw-semibold">
+                + Agendar nueva cita
+              </a>
+              <a routerLink="/productos" class="btn btn-primary">
+                Ver servicios y especialistas
+              </a>
+              <a routerLink="/" class="btn btn-outline-secondary">
+                Ir al inicio
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA 2: HISTORIAL DE CITAS / CONSULTAS (ARREGLOS + SUBTOTAL/IVA/TOTAL) -->
+      <div class="col-lg-10">
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+              <h3 class="h5 fw-bold mb-1" style="color: #0b2545;">
+                Historial de Citas y Consultas
+              </h3>
+              <p class="text-muted small mb-0">
+                Consulta, reprograma o cancela tus citas registradas y revisa el desglose de costos.
+              </p>
+            </div>
+            <span class="badge text-bg-primary px-3 py-2">
+              Total registros: {{ citasFiltradas().length }}
+            </span>
+          </div>
+
+          <!-- Filtros y ordenamiento por fecha -->
+          <div class="row g-3 align-items-end bg-light p-3 rounded-3 mb-4">
+            <div class="col-md-5">
+              <label class="form-label small fw-semibold mb-1">Filtrar por fecha</label>
+              <input
+                type="date"
+                class="form-control form-control-sm"
+                [value]="filtroFecha()"
+                (input)="cambiarFiltroFecha($any($event.target).value)"
+              />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold mb-1">Ordenar por fecha</label>
+              <select
+                class="form-select form-select-sm"
+                [value]="ordenFecha()"
+                (change)="cambiarOrden($any($event.target).value)"
+              >
+                <option value="desc">Más recientes primero</option>
+                <option value="asc">Más antiguas primero</option>
+              </select>
+            </div>
+
+            <div class="col-md-3 d-grid">
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm"
+                (click)="limpiarFiltro()"
+              >
+                Mostrar todas
+              </button>
+            </div>
+          </div>
+
+          @if (mensajeHistorial(); as msg) {
+            <div class="alert alert-success alert-dismissible fade show py-2 small" role="alert">
+              {{ msg }}
+              <button
+                type="button"
+                class="btn-close btn-sm"
+                (click)="mensajeHistorial.set(null)"
+              ></button>
+            </div>
+          }
+
+          @if (citasFiltradas().length === 0) {
+            <div class="text-center py-4 bg-light rounded-3">
+              <p class="text-muted mb-3">
+                No tienes citas registradas con los criterios seleccionados.
+              </p>
+              <a routerLink="/agendar-cita" class="btn btn-success btn-sm fw-semibold">
+                Agendar mi primera consulta
+              </a>
+            </div>
+          } @else {
+            <div class="d-flex flex-column gap-3">
+              @for (cita of citasFiltradas(); track cita.id) {
+                <div class="border rounded-4 p-3 p-md-4">
+                  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                    <div>
+                      <span class="badge bg-secondary me-2">Folio #{{ cita.id }}</span>
+                      <span class="badge text-bg-info text-dark me-2">{{ cita.especialidad }}</span>
+                      <span
+                        class="badge"
+                        [class.bg-warning]="cita.estado === 'Pendiente'"
+                        [class.text-dark]="cita.estado === 'Pendiente'"
+                        [class.bg-success]="cita.estado === 'Confirmada'"
+                        [class.bg-danger]="cita.estado === 'Cancelada'"
+                      >
+                        {{ cita.estado }}
+                      </span>
+                    </div>
+                    <small class="text-muted fw-semibold">
+                      Fecha cita: {{ cita.fecha }} · {{ cita.hora }}
+                    </small>
+                  </div>
+
+                  <h4 class="h6 fw-bold mb-1" style="color: #0b2545;">{{ cita.servicio }}</h4>
+                  <p class="small text-muted mb-3">Motivo: {{ cita.motivo }}</p>
+
+                  <!-- Desglose de items[], Subtotal, IVA y Total -->
+                  <div class="table-responsive mb-3">
+                    <table class="table table-sm table-bordered align-middle mb-0 small">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Concepto (Item)</th>
+                          <th class="text-center">Cant.</th>
+                          <th class="text-end">Subtotal</th>
+                          <th class="text-end">IVA (16%)</th>
+                          <th class="text-end">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (item of cita.items; track item.servicio) {
+                          <tr>
+                            <td>{{ item.servicio }}</td>
+                            <td class="text-center">{{ item.cantidad }}</td>
+                            <td class="text-end">${{ cita.subtotal }}</td>
+                            <td class="text-end">${{ cita.iva }}</td>
+                            <td class="text-end fw-bold">${{ cita.total }} MXN</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Formulario de edición o botones de acción -->
+                  @if (editandoCitaId() === cita.id) {
+                    <form
+                      [formGroup]="formEdicion"
+                      (ngSubmit)="guardarEdicion(cita.id)"
+                      class="bg-light p-3 rounded-3 mt-2"
+                    >
+                      <div class="row g-2">
+                        <div class="col-md-4">
+                          <label class="form-label small fw-semibold mb-1">Nueva fecha</label>
+                          <input type="date" class="form-control form-control-sm" formControlName="fecha" />
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label small fw-semibold mb-1">Nuevo horario</label>
+                          <select class="form-select form-select-sm" formControlName="hora">
+                            @for (h of horariosDisponibles; track h) {
+                              <option [value]="h">{{ h }}</option>
+                            }
+                          </select>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label small fw-semibold mb-1">Motivo</label>
+                          <input type="text" class="form-control form-control-sm" formControlName="motivo" />
+                        </div>
+                      </div>
+                      <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-sm">Guardar cambios</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="cancelarEdicion()">
+                          Cancelar
+                        </button>
+                      </div>
+                    </form>
+                  } @else {
+                    <div class="d-flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        class="btn btn-outline-primary btn-sm"
+                        (click)="iniciarEdicion(cita)"
+                      >
+                        Editar fecha / motivo
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-danger btn-sm"
+                        (click)="eliminarCita(cita.id)"
+                      >
+                        Eliminar del historial
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Resumen financiero acumulado del historial -->
+            <div class="card border-0 bg-light rounded-3 p-3 mt-4">
+              <div class="row text-end g-2 align-items-center">
+                <div class="col-sm-4">
+                  <span class="text-muted small d-block">Subtotal acumulado</span>
+                  <strong>${{ resumenFinanciero().subtotal }} MXN</strong>
+                </div>
+                <div class="col-sm-4">
+                  <span class="text-muted small d-block">IVA acumulado (16%)</span>
+                  <strong>${{ resumenFinanciero().iva }} MXN</strong>
+                </div>
+                <div class="col-sm-4">
+                  <span class="text-muted small d-block">Total general</span>
+                  <span class="fs-5 fw-bold text-success">${{ resumenFinanciero().total }} MXN</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,185 @@
+<section class="py-5 bg-light min-vh-100">
+  <div class="container" style="max-width: 820px;">
+    <div class="mb-4">
+      <span class="badge text-bg-primary mb-2">Atención Médica · Córdoba, Veracruz</span>
+      <h1 class="h3 fw-bold mb-1" style="color: #0b2545;">
+        Registrar una Cita Médica
+      </h1>
+      <p class="text-muted mb-0">
+        Selecciona la especialidad, el horario de tu preferencia y confirma tu reserva en Unidad Médica Araucaria.
+      </p>
+    </div>
+
+    @if (citaConfirmada(); as cita) {
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <div class="alert alert-success mb-4">
+          <strong>¡Cita registrada con éxito!</strong> Tu folio de reservación es
+          <strong>#{{ cita.id }}</strong>.
+        </div>
+
+        <h2 class="h5 fw-bold mb-3" style="color: #0b2545;">Resumen de tu cita</h2>
+        <ul class="list-group list-group-flush mb-4">
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Paciente:</span>
+            <strong>{{ cita.pacienteNombre }}</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Especialidad:</span>
+            <strong>{{ cita.especialidad }}</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Servicio:</span>
+            <strong>{{ cita.servicio }}</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Fecha y hora:</span>
+            <strong>{{ cita.fecha }} · {{ cita.hora }}</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Estado:</span>
+            <span class="badge text-bg-warning">{{ cita.estado }}</span>
+          </li>
+        </ul>
+
+        <div class="d-flex flex-wrap gap-2">
+          @if (auth.isAuthenticated()) {
+            <a routerLink="/paciente" class="btn btn-primary">
+              Ver en Mi Cuenta
+            </a>
+          }
+          <button type="button" class="btn btn-outline-primary" (click)="agendarOtra()">
+            Agendar otra cita
+          </button>
+          <a routerLink="/" class="btn btn-outline-secondary">
+            Volver al inicio
+          </a>
+        </div>
+      </div>
+    } @else {
+      <div class="card border-0 shadow-sm rounded-4 bg-white">
+        <div class="card-body p-4 p-md-5">
+          @if (!auth.isAuthenticated()) {
+            <div class="alert alert-info d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-4">
+              <span class="small">
+                Si inicias sesión, tu cita quedará vinculada a tu historial en <strong>Mi Cuenta</strong>.
+              </span>
+              <a routerLink="/login" class="btn btn-sm btn-outline-primary text-nowrap">
+                Iniciar sesión
+              </a>
+            </div>
+          }
+
+          <form [formGroup]="formulario" (ngSubmit)="enviarCita()" class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold small">Nombre completo del paciente</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="pacienteNombre"
+                placeholder="Ej. María Fernanda López"
+              />
+              @if (formulario.controls.pacienteNombre.touched && formulario.controls.pacienteNombre.invalid) {
+                <div class="text-danger small mt-1">Ingresa el nombre completo del paciente.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Correo electrónico</label>
+              <input
+                type="email"
+                class="form-control"
+                formControlName="email"
+                placeholder="tucorreo@ejemplo.com"
+              />
+              @if (formulario.controls.email.touched && formulario.controls.email.invalid) {
+                <div class="text-danger small mt-1">Ingresa un correo válido.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Teléfono de contacto</label>
+              <input
+                type="tel"
+                class="form-control"
+                formControlName="telefono"
+                placeholder="271 000 0000"
+              />
+              @if (formulario.controls.telefono.touched && formulario.controls.telefono.invalid) {
+                <div class="text-danger small mt-1">Ingresa un teléfono válido.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Especialidad médica</label>
+              <select
+                class="form-select"
+                formControlName="especialidad"
+                (change)="alCambiarEspecialidad($any($event.target).value)"
+              >
+                <option value="Medicina General">Medicina General</option>
+                <option value="Traumatología">Traumatología</option>
+                <option value="Ginecología">Ginecología</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Servicio / Consulta</label>
+              <select class="form-select" formControlName="servicio">
+                @for (srv of serviciosFiltrados(); track srv.id) {
+                  <option [value]="srv.nombre">
+                    {{ srv.nombre }} (${{ srv.precio }} MXN)
+                  </option>
+                } @empty {
+                  <option [value]="'Consulta de ' + especialidadSeleccionada()">
+                    Consulta de {{ especialidadSeleccionada() }}
+                  </option>
+                }
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Fecha preferida</label>
+              <input
+                type="date"
+                class="form-control"
+                formControlName="fecha"
+                [min]="fechaMinima"
+              />
+              @if (formulario.controls.fecha.touched && formulario.controls.fecha.invalid) {
+                <div class="text-danger small mt-1">Selecciona una fecha para tu cita.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Horario disponible</label>
+              <select class="form-select" formControlName="hora">
+                @for (h of horariosDisponibles; track h) {
+                  <option [value]="h">{{ h }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold small">Motivo de consulta o síntomas (opcional)</label>
+              <textarea
+                rows="3"
+                class="form-control"
+                formControlName="motivo"
+                placeholder="Describe brevemente el motivo de tu consulta..."
+              ></textarea>
+            </div>
+
+            <div class="col-12 d-flex gap-2 pt-2">
+              <button type="submit" class="btn btn-success px-4 fw-semibold">
+                Confirmar Cita
+              </button>
+              <a routerLink="/" class="btn btn-outline-secondary">
+                Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+  </div>
+</section>

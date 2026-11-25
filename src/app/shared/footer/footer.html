@@ -1,0 +1,71 @@
+<footer class="araucaria-footer text-white pt-5 pb-4 mt-auto">
+  <div class="container">
+    <div class="row g-4 pb-4">
+      <!-- Identidad de la clínica -->
+      <div class="col-lg-5">
+        <h3 class="h5 fw-bold mb-2">Unidad Médica Araucaria</h3>
+        <p class="small araucaria-footer-text mb-3">
+          Atención médica profesional y cercana en el centro de Córdoba, Veracruz,
+          con especialistas en Traumatología y Ortopedia, Ginecología y Medicina General.
+        </p>
+        <p class="small araucaria-footer-text mb-0">
+          <strong>Dirección:</strong> Av. 5 607, Centro, Córdoba, Ver.
+        </p>
+      </div>
+
+      <!-- Navegación rápida -->
+      <div class="col-6 col-lg-3">
+        <h4 class="h6 fw-bold text-uppercase small mb-3 araucaria-footer-heading">
+          Navegación
+        </h4>
+        <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+          <li>
+            <a class="araucaria-footer-link" [routerLink]="['/']">Inicio</a>
+          </li>
+          <li>
+            <a class="araucaria-footer-link" [routerLink]="['/']" fragment="servicios">
+              Servicios y Especialidades
+            </a>
+          </li>
+          <li>
+            <a class="araucaria-footer-link" [routerLink]="['/']" fragment="contact">
+              Contacto y Citas
+            </a>
+          </li>
+          <li>
+            <a class="araucaria-footer-link" [routerLink]="['/login']">
+              Portal del Paciente
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Especialidades -->
+      <div class="col-6 col-lg-4">
+        <h4 class="h6 fw-bold text-uppercase small mb-3 araucaria-footer-heading">
+          Especialistas
+        </h4>
+        <ul class="list-unstyled small araucaria-footer-text d-flex flex-column gap-2 mb-0">
+          <li>
+            <span class="fw-semibold text-white">Traumatología y Ortopedia:</span>
+            Dr. Francisco Muñoz
+          </li>
+          <li>
+            <span class="fw-semibold text-white">Ginecología:</span>
+            Dra. Isabel Pérez Hernández
+          </li>
+          <li>
+            <span class="fw-semibold text-white">Medicina General:</span>
+            Atención integral familiar
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Barra inferior -->
+    <div class="pt-3 border-top border-light border-opacity-10 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 small araucaria-footer-text">
+      <span>© {{ anioActual }} Unidad Médica Araucaria. Todos los derechos reservados.</span>
+      <span>Córdoba, Veracruz, México</span>
+    </div>
+  </div>
+</footer>
